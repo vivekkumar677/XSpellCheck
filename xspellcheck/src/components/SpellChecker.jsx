@@ -9,24 +9,26 @@ const customLibrary = {
 
 const SpellChecker = () => {
 
-    const [inputText, setInputtext] = useState('');
-    const [outputText, setOutputText] = useState('');
+    const [inputText, setInputText] = useState('');
+    const [suggestedText, setSuggestedText] = useState('');
 
     const handleInputChange = (event) => {
-        setInputtext(event.target.value);
+        const text = event.target.value;
+        setInputText(text);
 
-        const words = event.target.value.split(' ');
-        let corrected = '';
-        for (let i = 0; i < words.length; i++) {
-            const word = words[i];
-            if (customLibrary[word]) {
-                corrected += customLibrary[word] + ' ';
-            } else {
-                corrected += word + ' ';
-            }
-        }
+        const words = text.split(' ');
+        const correctWords = words.map((word) => {
+            const correctWord = customLibrary[word.toLowerCase()];
+            return correctWord || word;
+        });
 
-        setOutputText(corrected);
+        const correctedText = correctWords.join(' ');
+
+        const firstCorrection = correctWords.find((word, index) => word !== words[index]);
+
+        setSuggestedText(firstCorrection || '')
+
+        // setOutputText(corrected);
     }
 
     return (
@@ -39,8 +41,8 @@ const SpellChecker = () => {
                 value={inputText}
                 onChange={handleInputChange}
             />
-            {outputText && (
-                <p>Did you mean: <strong>{outputText}</strong></p>
+            {suggestedText && (
+                <p>Did you mean: <strong>{suggestedText}</strong>?</p>
             )}
         </div>
     )
